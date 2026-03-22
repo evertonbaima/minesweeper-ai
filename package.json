@@ -1,0 +1,14 @@
+{
+  "name": "minesweeper-ai",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "apply-issue": "bash .scripts/bash/apply-issue.sh"
+  }
+}
