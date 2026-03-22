@@ -21,6 +21,3 @@ dist-ssr
 
 # Vitest
 coverage
-
-# zip workflow
-.zip/done/
