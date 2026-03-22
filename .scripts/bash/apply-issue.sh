@@ -194,19 +194,19 @@ fi
 # ── Push ──────────────────────────────────────────────────────────────────────
 log_step "Pushing branch '$BRANCH' to origin"
 
-FIRST_PUSH=false
-
-# Detect if remote branch already exists
-if ! git ls-remote --exit-code --heads origin "$BRANCH" &>/dev/null; then
-  FIRST_PUSH=true
-fi
-
 git push origin "$BRANCH"
 log_success "Pushed to origin/$BRANCH"
 
-# ── Open Pull Request (first push only) ───────────────────────────────────────
-if [[ "$FIRST_PUSH" == true ]]; then
-  log_step "Opening Pull Request"
+# ── Open Pull Request (if branch has no open PR yet) ─────────────────────────
+log_step "Checking for existing Pull Request on branch '$BRANCH'"
+
+EXISTING_PR="$(gh pr list --head "$BRANCH" --state open --json number -q '.[0].number' 2>/dev/null || echo '')"
+
+if [[ -n "$EXISTING_PR" ]]; then
+  log_info "Open PR #$EXISTING_PR already exists for '$BRANCH' — skipping creation."
+  PR_NUMBER="$EXISTING_PR"
+else
+  log_step "No open PR found — opening Pull Request"
 
   # Fetch issue title from GitHub
   ISSUE_TITLE="$(gh issue view "$ISSUE_NUMBER" --json title -q .title 2>/dev/null || echo "Issue #${ISSUE_NUMBER}")"
@@ -232,16 +232,15 @@ Closes #${ISSUE_NUMBER}
 
   if [[ -n "$PR_URL" ]]; then
     log_success "Pull Request opened: $PR_URL"
+    PR_NUMBER="$(gh pr list --head "$BRANCH" --state open --json number -q '.[0].number' 2>/dev/null || echo '')"
   else
     log_warn "Could not open PR automatically (label may not exist yet). Create it manually."
+    PR_NUMBER=""
   fi
 fi
 
 # ── Code review via Claude (gh pr review) ────────────────────────────────────
 log_step "Fetching PR diff for code review"
-
-# Get the PR number for this branch
-PR_NUMBER="$(gh pr view "$BRANCH" --json number -q .number 2>/dev/null || echo '')"
 
 if [[ -z "$PR_NUMBER" ]]; then
   log_warn "No open PR found for branch '$BRANCH'. Skipping code review step."
