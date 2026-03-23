@@ -8,9 +8,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "vitest",
-    "test:run": "vitest run",
-    "install-deps": "bash .scripts/bash/install-deps.sh",
-    "run-tests": "bash .scripts/bash/run-tests.sh"
+    "test:run": "vitest run"
   },
   "dependencies": {
     "react": "^18.3.1",
