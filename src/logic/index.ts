@@ -64,7 +64,6 @@ export function placeMines(
   const rows = next.length;
   const cols = next[0].length;
 
-  // Build exclusion set: safe cell + its 8 neighbours
   const excluded = new Set<string>();
   for (let dr = -1; dr <= 1; dr++) {
     for (let dc = -1; dc <= 1; dc++) {
@@ -76,15 +75,19 @@ export function placeMines(
     }
   }
 
-  let placed = 0;
-  while (placed < mines) {
-    const r = Math.floor(Math.random() * rows);
-    const c = Math.floor(Math.random() * cols);
-    if (!next[r][c].isMine && !excluded.has(`${r},${c}`)) {
-      next[r][c].isMine = true;
-      placed++;
-    }
+  const candidates = next
+    .flat()
+    .filter((cell) => !excluded.has(`${cell.row},${cell.col}`));
+
+  // Fisher-Yates shuffle
+  for (let i = candidates.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [candidates[i], candidates[j]] = [candidates[j], candidates[i]];
   }
+
+  candidates.slice(0, mines).forEach((cell) => {
+    next[cell.row][cell.col].isMine = true;
+  });
 
   return next;
 }
