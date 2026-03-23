@@ -113,8 +113,9 @@ export function computeAdjacentCounts(board: Cell[][]): Cell[][] {
 
 /**
  * Reveals the cell at (row, col).
- * If the cell has adjacentMines === 0, flood-fills recursively to reveal
- * all connected empty cells and their numbered borders.
+ * If the cell has adjacentMines === 0, flood-fills iteratively using an
+ * explicit stack to reveal all connected empty cells and their numbered
+ * borders.
  * Already-revealed and flagged cells are never re-processed.
  */
 export function revealCell(
@@ -155,6 +156,11 @@ export function revealCell(
   return next;
 }
 
+/**
+ * Returns an array of [row, col] for each neighbour that is Hidden and not yet visited.
+ * Used by revealCell's flood-fill to find the next cells to reveal.
+ * Does not return Flagged or Revealed cells, since those should never be flood-filled.
+ */
 export function floodFill(
   neighbours: Cell[],
   visited: Set<string>,
