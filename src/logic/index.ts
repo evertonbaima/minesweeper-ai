@@ -133,15 +133,12 @@ export function revealCell(
     const key = `${r},${c}`;
     const cell = next[r][c];
 
-    if (visited.has(key)) {
-      continue;
-    }
+    if (visited.has(key)) continue;
 
     visited.add(key);
 
-    if ([CellState.Flagged, CellState.Revealed].includes(cell.state)) {
-      continue;
-    }
+    if (cell.state === CellState.Flagged) continue;
+    if (cell.state === CellState.Revealed) continue;
 
     cell.state = CellState.Revealed;
 
@@ -161,7 +158,7 @@ export function revealCell(
  * Used by revealCell's flood-fill to find the next cells to reveal.
  * Does not return Flagged or Revealed cells, since those should never be flood-filled.
  */
-export function floodFill(
+function floodFill(
   neighbours: Cell[],
   visited: Set<string>,
 ): Array<[number, number]> {
