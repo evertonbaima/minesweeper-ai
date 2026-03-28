@@ -54,4 +54,8 @@ export type GameState = {
   flagsRemaining: number;
   elapsedSeconds: number;
   bestTimes: Record<Difficulty, number | null>;
+  /** Coordinate of the cell to animate with a shake (chord mismatch). Cleared after animation. */
+  shakingCell: [number, number] | null;
+  /** Ordered queue of mine cells to reveal sequentially during loss animation. */
+  explosionQueue: Cell[];
 };
